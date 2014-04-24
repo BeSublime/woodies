@@ -1,0 +1,57 @@
+<head>
+  <title>woodies</title>
+  <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>
+        Woodies!<br>
+        <small>
+          Showing you all of the hoodies for sale on shirt woot!<small class="hidden-xs">&nbsp;(Journals too&mdash;I mean, they're made of wood, right?!)</small>
+        </small>
+      </h1>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        {{> items}}
+      </div>
+    </div>
+  </div>
+</body>
+
+<template name="items">
+  {{#each items}}
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        {{title}} ({{count}})
+      </div>
+      <div class="panel-body">
+        {{> itemset}}
+      </div>
+    </div>
+  {{else}}
+    <h2>loading...</h2>
+  {{/each}}
+</template>
+
+<template name="itemset">
+  {{#each rows}}
+    <div class="row">
+      {{#each items}}
+        <div class="item col-sm-3 center-block">
+          <a href="{{Url}}" target="_blank">
+            {{#each Photos}}
+              {{#if isLargePhoto}}
+                <img class="item-image img-responsive img-rounded" src="{{Url}}">
+              {{/if}}
+            {{/each}}
+            <span class="item-title">{{Title}}</span>
+          </a>
+        </div>
+      {{/each}}
+    </div>
+  {{/each}}
+</template>
