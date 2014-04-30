@@ -7,6 +7,7 @@ if (Meteor.isClient) {
             result = [],
             row = {};
         
+        // TODO: DRY this off.
         // hoodies
         _.each(res.data, function(event, i) {
           var hoodies = _.filter(event.Offers, function(offer) {
@@ -51,6 +52,29 @@ if (Meteor.isClient) {
           }
           
           result.push(journals);
+        }
+        
+        // totes
+        _.each(res.data, function(event, i) {
+          var totes = _.filter(event.Offers, function(offer) {
+            return offer.Title.toLowerCase().indexOf(' tote') > -1;
+          });
+          tempArray = tempArray.concat(totes);
+        });
+        
+        if (tempArray.length) {
+          var totes = {
+            title: "Totes",
+            count: tempArray.length,
+            rows: []
+          };
+  
+          while (tempArray.length > 0) {
+            row = {items: tempArray.splice(0, rowSize)};
+            totes.rows.push(row);
+          }
+          
+          result.push(totes);
         }
 
         Session.set("items", result);
