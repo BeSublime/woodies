@@ -13,3 +13,4 @@ To run it yourself, simply rename settings.sample.json to settings.json, replace
 ### To-Do
 - [ ] Add main woot.com item to API request (sometimes it's a shirt detour)
 - [ ] Add refresh button (and auto-refresh?)
+- [ ] Add select parameter to API request to speed up request & parsing time
