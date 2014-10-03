@@ -1,8 +1,12 @@
 Woodies!
 ========
 
-A simple site build with Meteor that displays only the hoodies and journals available on shirt.woot.com via the Woot API.
+A simple site built with Meteor that displays all of the non-shirt items available on shirt.woot.com (hoodies, journals, totes, mugs, etc.) via the [Woot API](http://api.woot.com/).
 
 Rename settings.sample.json to settings.json, replace `YOUR_API_KEY`, and you're off!
 
-*Please note: this site's code is ugly, unstructured, super wet (aka not DRY), and in general unpolished. It took me about an hour to write, and I plan to clean it up when time allows.*
+*Please note: This app's code is pretty messy. It's getting better with each iteration, but it's very much a work in progress.*
+
+
+### To-Do
+\- Add main woot.com item to API request (sometimes it's a shirt detour)
