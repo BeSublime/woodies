@@ -1,112 +1,94 @@
 if (Meteor.isClient) {
   Meteor.startup(function () {
-    Meteor.call('getItems', function(err, res) { 
+    Meteor.call('getAPIResult', function(err, res) { 
+      
+      // FIXME: this is kinda hacky, should be changed to strings, but with a way to specify titles
+      var searchTerms = {
+        hoodie: {},
+        journal: {},
+        tote: {},
+        mug: {}
+      };
+      
+      // FIXME: this can be consolidated; messages can go in a session var
+      var woodiesData = {
+        resultSets : []
+      };
+        
       if (res.data) {
-        var tempArray =  [],
-            rowSize = 4,
-            result = [],
-            row = {};
-        
-        // TODO: DRY this off.
-        // hoodies
-        _.each(res.data, function(event, i) {
-          var hoodies = _.filter(event.Offers, function(offer) {
-            return offer.Title.toLowerCase().indexOf('hoodie') > -1;
-          });
-          tempArray = tempArray.concat(hoodies);
-        });
-        
-        if (tempArray.length) {
-          var hoodies = {
-            title: "Hoodies",
-            count: tempArray.length,
-            rows: []
-          };
-  
-          while (tempArray.length > 0) {
-            row = {items: tempArray.splice(0, rowSize)};
-            hoodies.rows.push(row);
-          }
+        var buildResultSet = function(searchTerm) {
+          var items = [];
           
-          result.push(hoodies);
-        }
-        
-        // journals
-        _.each(res.data, function(event, i) {
-          var journals = _.filter(event.Offers, function(offer) {
-            return offer.Title.toLowerCase().indexOf('journal') > -1;
+          _.each(res.data, function(event, i) {
+            var searchResults = _.filter(event.Offers, function(offer) {
+              return offer.Title.toLowerCase().indexOf(' ' + searchTerm) > -1;
+            });
+            items = items.concat(searchResults);
           });
-          tempArray = tempArray.concat(journals);
-        });
-        
-        if (tempArray.length) {
-          var journals = {
-            title: "Journals",
-            count: tempArray.length,
-            rows: []
-          };
-  
-          while (tempArray.length > 0) {
-            row = {items: tempArray.splice(0, rowSize)};
-            journals.rows.push(row);
-          }
-          
-          result.push(journals);
-        }
-        
-        // totes
-        _.each(res.data, function(event, i) {
-          var totes = _.filter(event.Offers, function(offer) {
-            return offer.Title.toLowerCase().indexOf(' tote') > -1;
+          console.log(items);
+    
+          _.each(items, function(item, i) {
+            item._index = i;
           });
-          tempArray = tempArray.concat(totes);
-        });
-        
-        if (tempArray.length) {
-          var totes = {
-            title: "Totes",
-            count: tempArray.length,
-            rows: []
-          };
-  
-          while (tempArray.length > 0) {
-            row = {items: tempArray.splice(0, rowSize)};
-            totes.rows.push(row);
-          }
-          
-          result.push(totes);
-        }
+            
+          return items;
+        };
 
-        Session.set("items", result);
+        // Do the damn thang.
+        for (var searchTerm in searchTerms) {
+          var items = buildResultSet(searchTerm),
+              title = searchTerms[searchTerm].title || // quick n dirty capitalization/pluralization:
+                searchTerm.charAt(0).toUpperCase() +
+                searchTerm.slice(1).toLowerCase() + 's';
+                
+          if (items.length) {
+            woodiesData.resultSets.push({
+              items: items,
+              title: title
+            });
+          }
+        }
+        
+        if (!woodiesData.resultSets.length) {
+          woodiesData.message = "No woodies today =/";
+        }
       }
       else {
-        Session.set("items", {success: false, message: "Error loading items."}); 
+        woodiesData.message = 'Sorry, an error occured while trying to reach the woot servers. =/';
       }
+      
+      Session.set("woodiesData", woodiesData);
     });
   });
   
-  Template.itemset.isLargePhoto = function() {
+  Template.items.isLargePhoto = function() {
     return this.Width === 278;
   };
   
-  Template.items.items = function () {
-    return Session.get("items");
+  Template.woodies.data = function () {
+    return Session.get("woodiesData");
   };
   
+  Template.items.modIndex = function(modValue) {
+      return this._index > 0 && (this._index + 1) % modValue === 0;
+  };
+
   Meteor.methods({
-    getItems: function () {
-      Session.set("items", null);
+    getAPIResult: function () {
+      Session.set("woodiesData", null);
     }
   });
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
-    
+    if (typeof Meteor.settings.wootApiKey === "undefined") {
+        throw "Please create a settings file with your woot API key and run meteor with --settings settings.json."
+    }
   });
   
   Meteor.methods({
-    getItems: function () {
+    getAPIResult: function () {
       this.unblock();
       
       var params = {

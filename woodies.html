@@ -17,42 +17,55 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        {{> items}}
+        {{> woodies}}
       </div>
     </div>
   </div>
 </body>
 
-<template name="items">
-  {{#each items}}
-    <div class="panel panel-primary">
-      <div class="panel-heading">
-        {{title}} ({{count}})
+<template name="woodies">
+  {{#if data.resultSets.length }}
+    {{#each data.resultSets}}
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          {{title}} ({{items.length}})
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            {{> items}}
+          </div>
+        </div>
       </div>
-      <div class="panel-body">
-        {{> itemset}}
-      </div>
-    </div>
+    {{/each}}
   {{else}}
-    <h2>loading...</h2>
-  {{/each}}
+    <h2>
+      {{#unless data.message}}
+        <img src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-small.gif" alt="loading..." style="margin-right: 10px">
+        Loading...
+      {{else}}
+        {{data.message}}
+      {{/unless}}
+    </h2>
+  {{/if}}
 </template>
 
-<template name="itemset">
-  {{#each rows}}
-    <div class="row">
-      {{#each items}}
-        <div class="item col-sm-3 center-block">
-          <a href="{{Url}}" target="_blank">
-            {{#each Photos}}
-              {{#if isLargePhoto}}
-                <img class="item-image img-responsive img-rounded" src="{{Url}}">
-              {{/if}}
-            {{/each}}
-            <span class="item-title">{{Title}}</span>
-          </a>
-        </div>
-      {{/each}}
+<template name="items">
+  {{#each items}}
+    <div class="item col-sm-4 col-md-3 center-block">
+      <a href="{{Url}}" target="_blank">
+        {{#each Photos}}
+          {{#if isLargePhoto}}
+            <img class="item-image img-responsive img-rounded" src="{{Url}}">
+          {{/if}}
+        {{/each}}
+        <span class="item-title">{{Title}}</span>
+      </a>
     </div>
+    {{#if modIndex 4}}
+      <div class="clearfix hidden-xs hidden-sm"></div>
+    {{/if}}
+    {{#if modIndex 3}}
+      <div class="clearfix visible-sm-block"></div>
+    {{/if}}
   {{/each}}
 </template>

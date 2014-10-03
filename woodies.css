@@ -5,3 +5,16 @@
 .item-image {
   margin-bottom: 5px;
 }
+
+@media (max-width: 767px) {
+  .item a {
+    display: block;
+    text-align: center;
+  }
+  .item img {
+    display: inline;
+  }
+  .item span {
+    display: block;
+  }
+}
