@@ -4,7 +4,8 @@ if (Meteor.isClient) {
       
       // FIXME: this is kinda hacky, should be changed to strings, but with a way to specify titles
       var searchTerms = {
-        hoodie: {},
+        'zip hoodie': {title: 'Zip Hoodies'},
+        'pullover hoodie': {title: 'Pullover Hoodies'},
         journal: {},
         tote: {},
         mug: {}
